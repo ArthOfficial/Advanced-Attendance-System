@@ -7,11 +7,12 @@ from app.models.attendance import (
     QRToken,
 )
 from app.models.face import FaceEmbedding, FaceProfile, FaceVerificationLog
+from app.models.imports import ImportBatch
 from app.models.infra import AttendanceKiosk, AuditLog, Device, SystemSetting
 from app.models.user import Role, User
 
 __all__ = [
     "Attendance", "AttendanceMethod", "AttendanceSession", "AttendanceStatus", "QRToken",
     "Department", "Faculty", "Teacher", "FaceEmbedding", "FaceProfile", "FaceVerificationLog",
-    "AttendanceKiosk", "AuditLog", "Device", "SystemSetting", "Role", "User",
+    "AttendanceKiosk", "AuditLog", "Device", "SystemSetting", "Role", "User", "ImportBatch",
 ]
