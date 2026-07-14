@@ -2,9 +2,9 @@ from pydantic import BaseModel
 
 
 class LoginIn(BaseModel):
-    # ponytail: plain str, not EmailStr — LAN domains like `admin@smartcampus.local`
-    # are reserved TLDs that email-validator rejects. Emails are validated at creation (P1).
-    email: str
+    # ponytail: plain str — employee IDs and `.local` LAN emails both land here.
+    # Emails are validated at teacher/admin creation, not at login.
+    identifier: str
     password: str
 
 

@@ -16,7 +16,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/login", response_model=TokenPair)
 def login(body: LoginIn, db: Session = Depends(get_db)):
-    pair = AuthService(db).login(body.email, body.password)
+    pair = AuthService(db).login(body.identifier, body.password)
     if pair is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid credentials")
     return pair
