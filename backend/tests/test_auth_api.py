@@ -29,3 +29,12 @@ def test_login_and_rbac_flow():
 
     bad = client.post("/auth/login", json={"email": email, "password": "nope"})
     assert bad.status_code == 401
+
+
+def test_login_accepts_local_tld_email():
+    # Regression: `.local` and other reserved TLDs must be accepted at login (LAN deployment).
+    email = f"admin-{uuid.uuid4().hex[:8]}@smartcampus.local"
+    _mk_user(email, Role.admin, pw="pw12345")
+    r = client.post("/auth/login", json={"email": email, "password": "pw12345"})
+    assert r.status_code == 200
+    assert r.json()["access_token"]

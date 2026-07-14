@@ -1,8 +1,10 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 
 class LoginIn(BaseModel):
-    email: EmailStr
+    # ponytail: plain str, not EmailStr — LAN domains like `admin@smartcampus.local`
+    # are reserved TLDs that email-validator rejects. Emails are validated at creation (P1).
+    email: str
     password: str
 
 
