@@ -21,3 +21,10 @@ TYPE ∈ decision · deferral · cut-corner · user-request · assumption · ope
 - 2026-07-14 | P0 | decision | Phase 0 impl plan written: docs/superpowers/plans/2026-07-14-phase-0-foundations.md (8 TDD tasks).
 - 2026-07-14 | P0 | open-question | Plan tasks end in `git commit` but repo has no `.git`. Executor must `git init` before Task 1 (or we drop the commit steps). Pending user choice of exec mode.
 - 2026-07-14 | P0 | cut-corner | test_user_repo uses SQLite in-memory for the User table only; UUID/JSONB-heavy models tested against Postgres in integration tests (Tasks 5,6).
+- 2026-07-14 | P0 | decision | test_user_repo actually runs against Postgres (not SQLite) — postgresql.UUID/JSONB don't compile on SQLite. All DB tests need Postgres up + `alembic upgrade head`.
+- 2026-07-14 | P0 | bugfix | LoginIn.email changed EmailStr→str. email-validator rejects reserved TLDs like `.local`, which LAN deployments use (admin@smartcampus.local). Emails validated at creation (P1). Regression test added.
+- 2026-07-14 | P0 | decision | AuthService imported at module top in api/auth.py (plan had lazy inline import); no circular-import risk, cleaner.
+- 2026-07-14 | P0 | decision | Docker Desktop was not running; launched it. Local pytest runs need DATABASE_URL=...@localhost:5432 (compose maps 5432→host); container uses @db:5432.
+- 2026-07-14 | P0 | decision | Postgres 5432 published to host in docker-compose.yml so local alembic/pytest can reach the DB.
+- 2026-07-14 | P0 | assumption | Git line-ending warnings (LF→CRLF) are cosmetic on Windows; not adding a .gitattributes unless it causes trouble.
+- 2026-07-14 | P0 | note | frontend/AGENTS.md (from create-next-app) warns this Next.js version has breaking changes vs training data — read node_modules/next/dist/docs before writing frontend code in P2.

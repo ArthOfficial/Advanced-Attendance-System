@@ -17,8 +17,8 @@ abstraction so FACE/RFID/NFC can be added later without refactor.
 Roles: **Admin**, **Teacher**, **Attendance Kiosk**.
 
 ## STATUS
-- Phase 0 — Foundations ............... IN PROGRESS (brainstorming/design)
-- Phase 1 — Academic + Teachers ....... NOT STARTED
+- Phase 0 — Foundations ............... COMPLETED (2026-07-14, 8 tasks, 9 tests green, compose smoke OK)
+- Phase 1 — Academic + Teachers ....... NOT STARTED (next)
 - Phase 2 — Core Attendance Loop ...... NOT STARTED
 - Phase 3 — Admin + Audit + Network ... NOT STARTED
 - Phase 4 — Device Intel + Quarantine . DEFERRED

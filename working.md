@@ -26,3 +26,11 @@ Start from line 7
 - Self-review passed (spec coverage, no placeholders, type consistency).
 - Flagged: no git repo yet — executor must `git init` before commits. Logged in DECISIONS.md.
 - Awaiting user choice: subagent-driven vs inline execution.
+
+## 2026-07-14 — Phase 0 BUILT (inline execution)
+- All 8 tasks done, one commit each. 9 backend tests green. Full docker-compose smoke: admin logs in over HTTP, gets JWT.
+- Files: backend/ (FastAPI app, config, database, 14-table schema via alembic, security core, repo+service, auth+RBAC, seed, provider abstraction), frontend/ (Next.js PWA scaffold + manifest), docker-compose.yml (db+backend+frontend).
+- Bug found+fixed via smoke: `.local` login emails (EmailStr rejected reserved TLDs) → LoginIn.email now str + regression test.
+- Docker Desktop had to be started. Postgres 5432 published to host for local tests.
+- Run locally: `docker compose up --build` → http://localhost:8000/health, /docs ; login admin@smartcampus.local / ChangeMe123!
+- NEXT: Phase 1 (academic structure + teacher management). Needs its own spec → plan before build.
