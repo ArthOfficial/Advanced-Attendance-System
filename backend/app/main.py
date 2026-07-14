@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.academic import router as academic_router
 from app.api.admin import router as admin_router
 from app.api.auth import router as auth_router
+from app.api.teachers import router as teachers_router
 from app.config import settings
 
 app = FastAPI(title="SmartCampus Attendance", version="0.1.0")
@@ -19,6 +20,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(admin_router)
 app.include_router(academic_router)
+app.include_router(teachers_router)
 
 
 @app.get("/health")
