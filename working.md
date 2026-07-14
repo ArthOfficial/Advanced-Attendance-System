@@ -34,3 +34,10 @@ Start from line 7
 - Docker Desktop had to be started. Postgres 5432 published to host for local tests.
 - Run locally: `docker compose up --build` → http://localhost:8000/health, /docs ; login admin@smartcampus.local / ChangeMe123!
 - NEXT: Phase 1 (academic structure + teacher management). Needs its own spec → plan before build.
+
+## 2026-07-14 — Phase 1 design approved, spec written
+- Checked claude-mem: DB present but 0 observations — passive memory captured nothing. Saved project state to Claude Code file memory instead; repo trackers remain source of truth.
+- Verified repo state matches trackers (10 commits, P0 files all present, pushed to origin).
+- Brainstormed P1 with user: Employee-ID login (+DOB password, email optional), import preview→commit with duplicate override/skip/stop choice, unknown faculty/dept → reject row.
+- Wrote spec: `docs/superpowers/specs/2026-07-14-phase-1-academic-teachers-design.md`.
+- Next: writing-plans → implementation plan → inline execution.

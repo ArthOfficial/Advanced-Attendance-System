@@ -18,7 +18,7 @@ Roles: **Admin**, **Teacher**, **Attendance Kiosk**.
 
 ## STATUS
 - Phase 0 — Foundations ............... COMPLETED (2026-07-14, 8 tasks, 9 tests green, compose smoke OK)
-- Phase 1 — Academic + Teachers ....... NOT STARTED (next)
+- Phase 1 — Academic + Teachers ....... IN PROGRESS (design approved 2026-07-14; spec + plan written)
 - Phase 2 — Core Attendance Loop ...... NOT STARTED
 - Phase 3 — Admin + Audit + Network ... NOT STARTED
 - Phase 4 — Device Intel + Quarantine . DEFERRED

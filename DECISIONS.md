@@ -28,3 +28,9 @@ TYPE ∈ decision · deferral · cut-corner · user-request · assumption · ope
 - 2026-07-14 | P0 | decision | Postgres 5432 published to host in docker-compose.yml so local alembic/pytest can reach the DB.
 - 2026-07-14 | P0 | assumption | Git line-ending warnings (LF→CRLF) are cosmetic on Windows; not adding a .gitattributes unless it causes trouble.
 - 2026-07-14 | P0 | note | frontend/AGENTS.md (from create-next-app) warns this Next.js version has breaking changes vs training data — read node_modules/next/dist/docs before writing frontend code in P2.
+- 2026-07-14 | P1 | user-request | Login = Employee ID + DOB password. Email optional for teachers (nullable users.email). Admin/kiosk still log in by email — login identifier tries employee_id then email.
+- 2026-07-14 | P1 | user-request | Import duplicates: two-step preview→commit. Preview shows every duplicate with full details (id, department, everything); admin chooses override / skip / stop. Override never touches passwords.
+- 2026-07-14 | P1 | user-request | Unknown faculty/department in import → reject row; admin pre-creates.
+- 2026-07-14 | P1 | decision | Import preview cached in new `import_batches` table (JSONB, 1h expiry) so commit survives restarts; no dangling state.
+- 2026-07-14 | P1 | cut-corner | No admin frontend in P1 — admin uses FastAPI /docs until P3 dashboard.
+- 2026-07-14 | P1 | note | claude-mem plugin DB exists but has 0 observations/summaries — passive memory never captured anything. Compensating: repo trackers + Claude Code file-based memory (MEMORY.md) updated instead.
