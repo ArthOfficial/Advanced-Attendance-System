@@ -34,3 +34,7 @@ TYPE ∈ decision · deferral · cut-corner · user-request · assumption · ope
 - 2026-07-14 | P1 | decision | Import preview cached in new `import_batches` table (JSONB, 1h expiry) so commit survives restarts; no dangling state.
 - 2026-07-14 | P1 | cut-corner | No admin frontend in P1 — admin uses FastAPI /docs until P3 dashboard.
 - 2026-07-14 | P1 | note | claude-mem plugin DB exists but has 0 observations/summaries — passive memory never captured anything. Compensating: repo trackers + Claude Code file-based memory (MEMORY.md) updated instead.
+- 2026-07-14 | P1 | bugfix | Import tests: fixture employee IDs/emails were static → unique-violation across runs. Tests now tag IDs+emails per run. Lesson: fixture data must be run-unique when tests hit a shared Postgres.
+- 2026-07-14 | P1 | cut-corner | XLS legacy format untested (needs xlrd); XLSX+CSV covered. Add xlrd only if a real sheet demands it.
+- 2026-07-14 | P1 | note | Docker Desktop stops between sessions — restart it before running DB tests.
+- 2026-07-14 | P1 | decision | Phase 1 COMPLETE. V1 has NO UI yet besides Next.js placeholder — admin works via http://localhost:8000/docs (Swagger). Real UI: kiosk+scanner in P2, admin dashboard in P3.

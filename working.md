@@ -41,3 +41,10 @@ Start from line 7
 - Brainstormed P1 with user: Employee-ID login (+DOB password, email optional), import preview→commit with duplicate override/skip/stop choice, unknown faculty/dept → reject row.
 - Wrote spec: `docs/superpowers/specs/2026-07-14-phase-1-academic-teachers-design.md`.
 - Next: writing-plans → implementation plan → inline execution.
+
+## 2026-07-14 — Phase 1 BUILT (inline)
+- Plan: docs/superpowers/plans/2026-07-14-phase-1-academic-teachers.md — 7 tasks, all done, one commit each.
+- Files: models/imports.py, core/audit.py, core/passwords.py, repositories/{teacher,academic}_repo.py, services/{academic,teacher,import}_service.py, schemas/{academic,teacher,imports}.py, api/{academic,teachers,imports}.py, migration 798fbf8f (email nullable + import_batches), tests (24 green).
+- Fixed: import-test fixtures made run-unique (unique-violation on shared PG); Docker Desktop restart needed.
+- Smoke OK: login admin@smartcampus.local, faculty create 201, frontend 200.
+- NEXT: Phase 2 core attendance loop (sessions, rotating QR, scanner UI, kiosk UI).

@@ -18,3 +18,4 @@ npm-debug.log*
 # OS / IDE
 .DS_Store
 Thumbs.db
+.claude/
