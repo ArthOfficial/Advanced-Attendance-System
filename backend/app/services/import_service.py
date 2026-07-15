@@ -113,3 +113,57 @@ class ImportService(BaseService):
             "rejected": rejected,
             "counts": {"valid": len(valid), "duplicates": len(duplicates), "rejected": len(rejected)},
         }
+
+    def commit(self, import_id: str, duplicate_action: str, actor_id: uuid.UUID) -> dict:
+        from app.core.passwords import dob_password
+        from app.core.security import hash_password
+        from app.models.academic import Teacher
+        from app.models.user import Role, User
+
+        batch = self.db.get(ImportBatch, uuid.UUID(import_id))
+        if not batch:
+            raise ValueError("not_found")
+        if batch.consumed_at is not None:
+            raise ValueError("consumed")
+        if batch.expires_at < datetime.now(timezone.utc):
+            raise ValueError("expired")
+
+        created = updated = skipped = 0
+        for row in batch.payload["valid"]:
+            dob = date.fromisoformat(row["dob"])
+            user = User(email=row["email"] or None,
+                        password_hash=hash_password(dob_password(dob)),
+                        role=Role.teacher, force_password_reset=True)
+            self.db.add(user)
+            self.db.flush()
+            self.db.add(Teacher(
+                user_id=user.id, faculty_id=uuid.UUID(row["faculty_id"]),
+                department_id=uuid.UUID(row["department_id"]),
+                employee_id=row["employee_id"], full_name=row["full_name"], dob=dob,
+                designation=row["designation"] or None, email=row["email"] or None,
+            ))
+            created += 1
+
+        for entry in batch.payload["duplicates"]:
+            if duplicate_action == "skip":
+                skipped += 1
+                continue
+            row = entry["row"]
+            t = self.teachers.get_by_employee_id(row["employee_id"])
+            if not t:  # deleted since preview; treat as skip
+                skipped += 1
+                continue
+            t.full_name = row["full_name"]
+            t.dob = date.fromisoformat(row["dob"])
+            t.faculty_id = uuid.UUID(row["faculty_id"])
+            t.department_id = uuid.UUID(row["department_id"])
+            t.designation = row["designation"] or None
+            t.email = row["email"] or None
+            u = self.db.get(User, t.user_id)
+            u.email = row["email"] or None  # password_hash NEVER touched
+            updated += 1
+
+        batch.consumed_at = datetime.now(timezone.utc)
+        self.db.commit()
+        return {"created": created, "updated": updated, "skipped": skipped,
+                "rejected": batch.payload["rejected_count"]}

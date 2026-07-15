@@ -37,7 +37,9 @@ def _setup(h):
 def test_preview_classifies_rows():
     h = _admin_headers()
     fac, dep, existing = _setup(h)
-    csv = FIXTURE.read_text().replace("{FAC}", fac).replace("{DEP}", dep).replace("{EXISTING}", existing)
+    tag = uuid.uuid4().hex[:6].upper()
+    csv = (FIXTURE.read_text().replace("{FAC}", fac).replace("{DEP}", dep)
+           .replace("{EXISTING}", existing).replace("IMP", f"I{tag}").replace("@x.local", f"-{tag}@x.local"))
 
     r = client.post("/teachers/import/preview",
                     files={"file": ("teachers.csv", csv, "text/csv")}, headers=h)
@@ -45,7 +47,7 @@ def test_preview_classifies_rows():
     body = r.json()
 
     assert body["counts"] == {"valid": 1, "duplicates": 1, "rejected": 4}
-    assert body["valid"][0]["employee_id"] == "IMP001"
+    assert body["valid"][0]["employee_id"] == f"I{tag}001"
     dup = body["duplicates"][0]
     assert dup["row"]["employee_id"] == existing
     assert dup["existing"]["full_name"] == "Already Here"
@@ -55,5 +57,5 @@ def test_preview_classifies_rows():
     assert body["import_id"]
 
     # preview writes no teachers
-    check = client.get("/teachers", params={"q": "IMP001"}, headers=h)
+    check = client.get("/teachers", params={"q": f"I{tag}001"}, headers=h)
     assert check.json() == []
