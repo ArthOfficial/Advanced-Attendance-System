@@ -1,0 +1,7 @@
+Employee ID,Full Name,DOB,Faculty,Department,Designation,Email
+IMP001,Good Row,15/08/1990,{FAC},{DEP},Lecturer,good@x.local
+IMP001,Dupe In File,16/08/1990,{FAC},{DEP},Lecturer,
+IMP002,Unknown Dept,17/08/1990,{FAC},Nonexistent,Lecturer,
+IMP003,Bad Dob,notadate,{FAC},{DEP},Lecturer,
+{EXISTING},Db Dupe,18/08/1990,{FAC},{DEP},Professor,dbdupe@x.local
+,Missing Emp,19/08/1990,{FAC},{DEP},Lecturer,
