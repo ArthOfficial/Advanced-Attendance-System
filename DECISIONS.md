@@ -38,3 +38,6 @@ TYPE ∈ decision · deferral · cut-corner · user-request · assumption · ope
 - 2026-07-14 | P1 | cut-corner | XLS legacy format untested (needs xlrd); XLSX+CSV covered. Add xlrd only if a real sheet demands it.
 - 2026-07-14 | P1 | note | Docker Desktop stops between sessions — restart it before running DB tests.
 - 2026-07-14 | P1 | decision | Phase 1 COMPLETE. V1 has NO UI yet besides Next.js placeholder — admin works via http://localhost:8000/docs (Swagger). Real UI: kiosk+scanner in P2, admin dashboard in P3.
+- 2026-07-15 | P2 | decision | Phase 2 COMPLETE. Kiosk polls /kiosk/qr every 30s (no websocket). Scanner: BarcodeDetector native + jsQR fallback + paste-code fallback (camera-less testing).
+- 2026-07-15 | P2 | cut-corner | No qr_tokens purge job (rows tiny; add in P5 if needed). No device fingerprinting (P4). QR payload = plain JSON {payload,sig} string.
+- 2026-07-15 | P2 | decision | Kiosk usernames are kiosk-<hex>@kiosk.local in users.email; disabling kiosk disables its user login too.

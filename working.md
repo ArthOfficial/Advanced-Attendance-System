@@ -48,3 +48,9 @@ Start from line 7
 - Fixed: import-test fixtures made run-unique (unique-violation on shared PG); Docker Desktop restart needed.
 - Smoke OK: login admin@smartcampus.local, faculty create 201, frontend 200.
 - NEXT: Phase 2 core attendance loop (sessions, rotating QR, scanner UI, kiosk UI).
+
+## 2026-07-15 — Phase 2 BUILT
+- Backend: session_service.py (daily ATT-date, idempotent+clock-recovery), core/qr.py (HMAC), api/kiosks.py (admin creates kiosk accounts, one-time password), api/kiosk_qr.py (30s signed QR), providers/qr_provider.py (validate: sig/unused/unexpired/today + one-txn mark), api/attendance.py (/scan, /me history). tests/test_scan.py — 5 tests; suite 29 green.
+- Frontend: lib/api.ts, /login, /change-password, / (role home), /kiosk (QR canvas+countdown), /scan (BarcodeDetector+jsQR+paste fallback), /me (profile+stats+history). Build green.
+- E2E smoke: admin→create kiosk→kiosk login→QR issued. Frontend 200.
+- NEXT: Phase 3 (admin dashboard UI, audit search, network IP validation).
