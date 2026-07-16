@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { roleFromToken } from "@/lib/api";
+import { usePathname } from "next/navigation";
+import { logout, roleFromToken } from "@/lib/api";
 
 const NAV = [
   ["/admin", "📊 Dashboard"],
@@ -14,6 +15,7 @@ const NAV = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [ok, setOk] = useState(false);
+  const path = usePathname();
   useEffect(() => {
     if (roleFromToken() !== "admin") { window.location.href = "/login"; return; }
     setOk(true);
@@ -24,10 +26,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="md:w-56 shrink-0 border-b md:border-b-0 md:border-r border-zinc-800 p-4 space-y-1">
         <div className="mb-4 font-semibold">SmartCampus Admin</div>
         {NAV.map(([href, label]) => (
-          <a key={href} href={href} className="block rounded-lg px-3 py-2 text-sm hover:bg-zinc-800">{label}</a>
+          <a key={href} href={href}
+             className={`block rounded-lg px-3 py-2 text-sm hover:bg-zinc-800 ${path === href ? "bg-zinc-800 text-white" : "text-zinc-300"}`}>
+            {label}
+          </a>
         ))}
-        <button className="mt-4 px-3 text-sm text-zinc-500 hover:text-zinc-300"
-                onClick={() => { localStorage.clear(); window.location.href = "/login"; }}>
+        <button className="mt-4 px-3 text-sm text-zinc-500 hover:text-zinc-300" onClick={logout}>
           Sign out
         </button>
       </aside>

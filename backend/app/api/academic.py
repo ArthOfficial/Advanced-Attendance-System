@@ -18,10 +18,16 @@ from app.services.academic_service import AcademicService
 router = APIRouter(tags=["academic"])
 
 _HTTP = {"duplicate": 409, "not_found": 404, "has_children": 409}
+_MSG = {
+    "duplicate": "That name already exists.",
+    "not_found": "Not found.",
+    "has_children": "Cannot delete: it still has departments or teachers assigned. Move or delete them first.",
+}
 
 
 def _raise(e: ValueError):
-    raise HTTPException(_HTTP.get(str(e), 400), str(e))
+    code = str(e)
+    raise HTTPException(_HTTP.get(code, 400), _MSG.get(code, code))
 
 
 @router.post("/faculties", response_model=FacultyOut, status_code=201)

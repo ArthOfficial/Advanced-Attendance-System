@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { api } from "@/lib/api";
+import { api, logout } from "@/lib/api";
 
 type Profile = { full_name: string; employee_id: string; faculty_name: string;
                  department_name: string; designation: string | null };
@@ -19,42 +19,62 @@ export default function Me() {
   }, []);
 
   if (err) return <main className="min-h-screen bg-zinc-950 p-8 text-red-400">{err}</main>;
-  if (!p || !h) return null;
+  if (!p || !h) return (
+    <main className="min-h-screen flex items-center justify-center bg-zinc-950 text-zinc-500">Loading…</main>
+  );
+  const pct = h.total_sessions ? Math.round(h.present_days * 100 / h.total_sessions) : 0;
 
   return (
     <main className="min-h-screen bg-zinc-950 p-6 text-zinc-100">
       <div className="mx-auto max-w-2xl space-y-6">
-        <div className="rounded-2xl bg-zinc-900 p-6">
-          <h1 className="text-xl font-semibold">{p.full_name}</h1>
-          <p className="text-sm text-zinc-400">{p.employee_id} · {p.designation ?? "Teacher"}</p>
-          <p className="text-sm text-zinc-400">{p.faculty_name} → {p.department_name}</p>
+        <div className="flex items-start justify-between rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+          <div>
+            <h1 className="text-xl font-semibold">{p.full_name}</h1>
+            <p className="text-sm text-zinc-400">{p.employee_id} · {p.designation ?? "Teacher"}</p>
+            <p className="text-sm text-zinc-400">{p.faculty_name} → {p.department_name}</p>
+          </div>
+          <button className="text-sm text-zinc-500 hover:text-zinc-300" onClick={logout}>Sign out</button>
         </div>
-        <div className="flex gap-4">
-          <div className="flex-1 rounded-2xl bg-zinc-900 p-6 text-center">
+
+        <a href="/scan"
+           className="block rounded-2xl bg-emerald-600 p-5 text-center text-lg font-medium hover:bg-emerald-500">
+          📷 Scan attendance QR
+        </a>
+
+        <div className="grid grid-cols-3 gap-4">
+          <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 text-center">
             <p className="text-3xl font-bold text-emerald-400">{h.present_days}</p>
             <p className="text-sm text-zinc-400">Days present</p>
           </div>
-          <div className="flex-1 rounded-2xl bg-zinc-900 p-6 text-center">
+          <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 text-center">
             <p className="text-3xl font-bold">{h.total_sessions}</p>
             <p className="text-sm text-zinc-400">Total sessions</p>
           </div>
+          <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 text-center">
+            <p className={`text-3xl font-bold ${pct >= 75 ? "text-emerald-400" : "text-yellow-400"}`}>{pct}%</p>
+            <p className="text-sm text-zinc-400">Attendance</p>
+          </div>
         </div>
-        <table className="w-full rounded-2xl bg-zinc-900 text-sm">
-          <thead><tr className="text-left text-zinc-400">
-            <th className="p-3">Date</th><th>Status</th><th>Method</th><th>Time</th>
-          </tr></thead>
-          <tbody>
-            {h.records.map(r => (
-              <tr key={r.date} className="border-t border-zinc-800">
-                <td className="p-3">{r.date}</td>
-                <td className={r.status === "present" ? "text-emerald-400" : "text-red-400"}>{r.status}</td>
-                <td>{r.method}</td>
-                <td>{r.marked_at ? new Date(r.marked_at).toLocaleTimeString() : "—"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <a className="text-sm text-zinc-500 hover:text-zinc-300" href="/">← Home</a>
+
+        <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900">
+          <table className="w-full text-sm">
+            <thead><tr className="text-left text-zinc-400">
+              <th className="p-3">Date</th><th>Status</th><th>Method</th><th>Time</th>
+            </tr></thead>
+            <tbody>
+              {h.records.map(r => (
+                <tr key={r.date} className="border-t border-zinc-800">
+                  <td className="p-3">{r.date}</td>
+                  <td className={r.status === "present" ? "text-emerald-400" : "text-red-400"}>{r.status}</td>
+                  <td>{r.method}</td>
+                  <td>{r.marked_at ? new Date(r.marked_at).toLocaleTimeString() : "—"}</td>
+                </tr>
+              ))}
+              {!h.records.length && <tr className="border-t border-zinc-800">
+                <td className="p-3 text-zinc-500" colSpan={4}>No attendance yet.</td></tr>}
+            </tbody>
+          </table>
+        </div>
       </div>
     </main>
   );

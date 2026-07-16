@@ -52,3 +52,6 @@ TYPE ∈ decision · deferral · cut-corner · user-request · assumption · ope
 - 2026-07-16 | P5 | decision | Report percent = present / (sessions_in_range × teachers_in_group). Teachers created mid-range are counted against all sessions in range (no hire-date proration).
 - 2026-07-16 | ops | user-request | Wiped all test-generated accounts/data from dev DB; kept 1 admin, created 3 named test teachers + 1 kiosk. Test-account teachers have force_password_reset=False (demo convenience — real imports still force reset).
 - 2026-07-16 | bugfix | api() now redirects to /login on 401 instead of surfacing "HTTP 401" — expired access tokens (15 min) were leaving pages stuck.
+- 2026-07-16 | bugfix | Phones couldn't use the app: NEXT_PUBLIC_API_URL default localhost:8000 + CORS localhost-only. API base now derived from window.location.hostname; CORS regex allows any http origin on :3000 (fine — local-network app, real gate is JWT + optional CIDR allowlist).
+- 2026-07-16 | decision | "Keep me logged in" = storage choice (localStorage vs sessionStorage) + silent refresh-token retry on 401. No server-side session table (ponytail).
+- 2026-07-16 | decision | has_children is intentional (block deleting faculty with departments / department with teachers); only the message was made human-readable. No cascade delete.

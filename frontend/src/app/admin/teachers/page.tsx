@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { API, api } from "@/lib/api";
+import { API, api, getToken } from "@/lib/api";
 
 type Opt = { id: string; name: string; faculty_id?: string };
 type Teacher = { id: string; employee_id: string; full_name: string; dob: string;
@@ -50,7 +50,7 @@ export default function Teachers() {
       fd.append("file", file);
       const res = await fetch(`${API}/teachers/import/preview`, {
         method: "POST", body: fd,
-        headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
+        headers: { Authorization: `Bearer ${getToken()}` },
       });
       const b = await res.json();
       if (!res.ok) throw new Error(b?.detail ?? `HTTP ${res.status}`);

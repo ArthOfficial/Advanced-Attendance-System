@@ -17,6 +17,8 @@ app = FastAPI(title="SmartCampus Attendance", version="0.1.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
+    # local-network app: the PWA is served from any LAN IP on :3000 (phones scan from it)
+    allow_origin_regex=r"http://[a-zA-Z0-9.\-]+:3000",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

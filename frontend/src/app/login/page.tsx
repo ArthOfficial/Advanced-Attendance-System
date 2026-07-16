@@ -1,11 +1,12 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { API, roleFromToken } from "@/lib/api";
+import { API, roleFromToken, setTokens } from "@/lib/api";
 
 export default function Login() {
   const [identifier, setId] = useState("");
   const [password, setPw] = useState("");
+  const [remember, setRemember] = useState(false);
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
   const router = useRouter();
@@ -23,11 +24,10 @@ export default function Login() {
         setErr(b?.detail ?? "Invalid credentials"); return;
       }
       const b = await res.json();
-      localStorage.setItem("access_token", b.access_token);
-      localStorage.setItem("refresh_token", b.refresh_token);
+      setTokens(b.access_token, b.refresh_token, remember);
       if (b.force_password_reset) { router.push("/change-password"); return; }
       const role = roleFromToken();
-      router.push(role === "kiosk" ? "/kiosk" : role === "teacher" ? "/scan" : "/admin");
+      router.push(role === "kiosk" ? "/kiosk" : role === "teacher" ? "/me" : "/admin");
     } catch {
       setErr("Cannot reach the server. Is the backend running?");
     } finally { setBusy(false); }
@@ -53,6 +53,11 @@ export default function Login() {
                  value={password} onChange={e => setPw(e.target.value)} />
         </div>
         {err && <p className="rounded-lg bg-red-950/60 px-3 py-2 text-sm text-red-400">{err}</p>}
+        <label className="flex items-center gap-2 text-sm text-zinc-300">
+          <input type="checkbox" className="h-4 w-4 accent-emerald-600" checked={remember}
+                 onChange={e => setRemember(e.target.checked)} />
+          Keep me logged in
+        </label>
         <button disabled={busy || !identifier || !password}
                 className="w-full rounded-lg bg-emerald-600 p-3 text-sm font-medium hover:bg-emerald-500 disabled:opacity-50">
           {busy ? "Signing in…" : "Sign in"}

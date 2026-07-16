@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { API, api } from "@/lib/api";
+import { API, api, getToken } from "@/lib/api";
 
 type Row = { name: string | null; employee_id?: string; faculty?: string; department?: string;
   teachers?: number; present: number; total_sessions: number; percent: number };
@@ -29,7 +29,7 @@ export default function Reports() {
 
   const downloadCsv = async () => {
     const res = await fetch(`${API}/admin/reports?${qs}&fmt=csv`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` } });
+      headers: { Authorization: `Bearer ${getToken()}` } });
     const blob = await res.blob();
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);

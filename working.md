@@ -81,3 +81,13 @@ Start from line 7
 - login page redesigned: labels, autofocus, loading state, server-unreachable + API error detail, DOB hint, admin now lands on /admin.
 - lib/api.ts bugfix: 401 → clear tokens + redirect to /login (expired 15-min tokens previously left pages stuck on error).
 - Build green, all 3 role logins verified 200.
+
+## 2026-07-16 — Mobile/LAN fixes + auth UX
+- ROOT CAUSE of phone black-screen/dead login: API base was baked as http://localhost:8000 (phone's own localhost) and CORS only allowed localhost:3000.
+  - lib/api.ts: API now defaults to http://<page hostname>:8000 at runtime (env override still wins).
+  - main.py: CORS allow_origin_regex http://*:3000 for LAN devices.
+- / is now a pure redirect → /login, /admin, /kiosk, or /me by role (no chooser page).
+- "Keep me logged in" checkbox: localStorage when ticked, sessionStorage (tab-only) otherwise; api() silently refreshes on 401 via /auth/refresh then retries once, else logs out.
+- /me upgraded to teacher dashboard: big Scan button, attendance % tile, sign out, empty state.
+- Admin sidebar highlights active page. academic delete errors now human-readable ("Cannot delete: still has departments or teachers…" instead of "has_children").
+- 32 tests green; CORS preflight from LAN origin verified 200.
