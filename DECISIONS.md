@@ -41,3 +41,6 @@ TYPE ∈ decision · deferral · cut-corner · user-request · assumption · ope
 - 2026-07-15 | P2 | decision | Phase 2 COMPLETE. Kiosk polls /kiosk/qr every 30s (no websocket). Scanner: BarcodeDetector native + jsQR fallback + paste-code fallback (camera-less testing).
 - 2026-07-15 | P2 | cut-corner | No qr_tokens purge job (rows tiny; add in P5 if needed). No device fingerprinting (P4). QR payload = plain JSON {payload,sig} string.
 - 2026-07-15 | P2 | decision | Kiosk usernames are kiosk-<hex>@kiosk.local in users.email; disabling kiosk disables its user login too.
+- 2026-07-16 | P3 | bugfix | test_provider_registry fake provider registered under "QR", clobbering the real QRProvider in the shared registry → scan tests got str "marked". Fake now uses method "FAKE". Lesson: module-level registries are shared across the test session.
+- 2026-07-16 | P3 | decision | Network validation: SystemSetting "allowed_networks" {enabled,cidrs}. Loopback always allowed; unparseable client IP fail-open (ponytail — testclient/odd proxies). Only /attendance/scan enforced in V1.
+- 2026-07-16 | P3 | user-request | User forgot admin password → reset directly in DB to ChangeMe123!. No forgot-password flow in V1 (admin resets via DB or /docs).

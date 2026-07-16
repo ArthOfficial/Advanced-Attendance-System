@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 
 from app.api.deps import require_role
 from app.core.audit import audit
@@ -22,7 +22,11 @@ _MSG = {
 
 
 @router.post("/scan", response_model=ScanOut)
-def scan(body: ScanIn, user: User = Depends(require_role("teacher")), db=Depends(get_db)):
+def scan(request: Request, body: ScanIn, user: User = Depends(require_role("teacher")), db=Depends(get_db)):
+    from app.api.admin import client_ip_allowed
+    if not client_ip_allowed(request, db):
+        audit(db, user.id, "attendance.scan.network_blocked")
+        raise HTTPException(403, "You must be connected to the University Network.")
     teacher = TeacherRepository(db).get_by_user_id(user.id)
     if not teacher:
         raise HTTPException(404, "Teacher profile not found")

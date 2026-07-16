@@ -54,3 +54,10 @@ Start from line 7
 - Frontend: lib/api.ts, /login, /change-password, / (role home), /kiosk (QR canvas+countdown), /scan (BarcodeDetector+jsQR+paste fallback), /me (profile+stats+history). Build green.
 - E2E smoke: admin→create kiosk→kiosk login→QR issued. Frontend 200.
 - NEXT: Phase 3 (admin dashboard UI, audit search, network IP validation).
+
+## 2026-07-16 — Phase 3 backend
+- api/admin.py rewritten: /admin/stats (day/faculty/dept filters), /admin/audit (q+action search), GET/PUT /admin/settings/network (CIDR allowlist, SystemSetting "allowed_networks"), client_ip_allowed helper (loopback ok, unparseable fail-open).
+- api/attendance.py: /scan now network-checked first → 403 "University Network" message when blocked.
+- tests/test_admin_p3.py added (2 tests). Fixed test pollution: test_provider_registry fake overwrote real QR provider (method "QR"→"FAKE"). Suite 31 green.
+- User forgot admin password → reset in DB to ChangeMe123! (force_password_reset=False).
+- NEXT: P3 admin frontend (dashboard, faculties/departments, teachers+import wizard, kiosks, audit, network settings).

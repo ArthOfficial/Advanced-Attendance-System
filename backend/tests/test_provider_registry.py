@@ -4,7 +4,7 @@ from app.core.providers import attendance as prov
 
 
 class _Fake(prov.AttendanceProvider):
-    method = "QR"
+    method = "FAKE"  # must not clash with the real QR provider (shared registry)
 
     def validate_and_mark(self, db, payload):
         return "marked"
@@ -13,7 +13,7 @@ class _Fake(prov.AttendanceProvider):
 def test_register_and_get():
     p = _Fake()
     prov.register_provider(p)
-    assert prov.get_provider("QR") is p
+    assert prov.get_provider("FAKE") is p
 
 
 def test_get_unknown_raises():
