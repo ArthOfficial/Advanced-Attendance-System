@@ -74,3 +74,10 @@ Start from line 7
 - tests/test_admin_p3.py: +test_reports_json_and_csv → 32 passed.
 - frontend/src/app/admin/reports/page.tsx: date range, group-by, table, CSV download. Nav link added.
 - npm build green, compose rebuild: /admin/reports 200, API returns real rollups.
+
+## 2026-07-16 — Cleanup + UI polish (user request)
+- DB cleanup: wiped test junk (110 admins→1, 93 teacher users→3, 6 dead kiosks→1, all attendance/audit/sessions/imports). Kept admin@smartcampus.local.
+- Seeded: Faculty of Engineering (CS, EE), Faculty of Science (Physics); teachers T001 Alice Kumar / T002 Bob Sharma / T003 Carol Singh (DOB passwords, no forced reset); kiosk Main Gate (kiosk1@kiosk.local / Kiosk123!).
+- login page redesigned: labels, autofocus, loading state, server-unreachable + API error detail, DOB hint, admin now lands on /admin.
+- lib/api.ts bugfix: 401 → clear tokens + redirect to /login (expired 15-min tokens previously left pages stuck on error).
+- Build green, all 3 role logins verified 200.

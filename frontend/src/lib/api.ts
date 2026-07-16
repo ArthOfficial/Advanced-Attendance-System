@@ -10,6 +10,12 @@ export async function api(path: string, opts: RequestInit = {}) {
       ...(opts.headers ?? {}),
     },
   });
+  if (res.status === 401 && typeof window !== "undefined" && !path.startsWith("/auth")) {
+    // expired/invalid token → back to login
+    localStorage.clear();
+    window.location.href = "/login";
+    throw new Error("Session expired");
+  }
   if (!res.ok) {
     const b = await res.json().catch(() => ({}));
     throw new Error(b?.detail ?? `HTTP ${res.status}`);

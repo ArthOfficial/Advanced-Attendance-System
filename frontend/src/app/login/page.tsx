@@ -7,36 +7,57 @@ export default function Login() {
   const [identifier, setId] = useState("");
   const [password, setPw] = useState("");
   const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
   const router = useRouter();
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    setErr("");
-    const res = await fetch(`${API}/auth/login`, {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ identifier, password }),
-    });
-    if (!res.ok) { setErr("Invalid credentials"); return; }
-    const b = await res.json();
-    localStorage.setItem("access_token", b.access_token);
-    localStorage.setItem("refresh_token", b.refresh_token);
-    if (b.force_password_reset) { router.push("/change-password"); return; }
-    const role = roleFromToken();
-    router.push(role === "kiosk" ? "/kiosk" : role === "teacher" ? "/scan" : "/");
+    setErr(""); setBusy(true);
+    try {
+      const res = await fetch(`${API}/auth/login`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identifier: identifier.trim(), password }),
+      });
+      if (!res.ok) {
+        const b = await res.json().catch(() => ({}));
+        setErr(b?.detail ?? "Invalid credentials"); return;
+      }
+      const b = await res.json();
+      localStorage.setItem("access_token", b.access_token);
+      localStorage.setItem("refresh_token", b.refresh_token);
+      if (b.force_password_reset) { router.push("/change-password"); return; }
+      const role = roleFromToken();
+      router.push(role === "kiosk" ? "/kiosk" : role === "teacher" ? "/scan" : "/admin");
+    } catch {
+      setErr("Cannot reach the server. Is the backend running?");
+    } finally { setBusy(false); }
   }
 
+  const input = "w-full rounded-lg border border-zinc-700 bg-zinc-800 p-3 text-sm outline-none focus:border-emerald-500";
   return (
-    <main className="min-h-screen flex items-center justify-center bg-zinc-950 text-zinc-100">
-      <form onSubmit={submit} className="w-80 space-y-4 rounded-2xl bg-zinc-900 p-8 shadow-xl">
-        <h1 className="text-xl font-semibold">SmartCampus</h1>
-        <input className="w-full rounded-lg bg-zinc-800 p-3 text-sm" placeholder="Employee ID or email"
-               value={identifier} onChange={e => setId(e.target.value)} />
-        <input className="w-full rounded-lg bg-zinc-800 p-3 text-sm" type="password" placeholder="Password"
-               value={password} onChange={e => setPw(e.target.value)} />
-        {err && <p className="text-sm text-red-400">{err}</p>}
-        <button className="w-full rounded-lg bg-emerald-600 p-3 text-sm font-medium hover:bg-emerald-500">
-          Sign in
+    <main className="min-h-screen flex items-center justify-center bg-zinc-950 text-zinc-100 p-4">
+      <form onSubmit={submit} className="w-full max-w-sm space-y-4 rounded-2xl border border-zinc-800 bg-zinc-900 p-8 shadow-xl">
+        <div className="text-center">
+          <div className="text-4xl">🎓</div>
+          <h1 className="mt-2 text-2xl font-semibold">SmartCampus</h1>
+          <p className="text-sm text-zinc-400">University Attendance</p>
+        </div>
+        <div className="space-y-1">
+          <label className="text-xs text-zinc-400" htmlFor="id">Employee ID or email</label>
+          <input id="id" className={input} placeholder="e.g. T001" autoFocus autoComplete="username"
+                 value={identifier} onChange={e => setId(e.target.value)} />
+        </div>
+        <div className="space-y-1">
+          <label className="text-xs text-zinc-400" htmlFor="pw">Password</label>
+          <input id="pw" className={input} type="password" placeholder="••••••••" autoComplete="current-password"
+                 value={password} onChange={e => setPw(e.target.value)} />
+        </div>
+        {err && <p className="rounded-lg bg-red-950/60 px-3 py-2 text-sm text-red-400">{err}</p>}
+        <button disabled={busy || !identifier || !password}
+                className="w-full rounded-lg bg-emerald-600 p-3 text-sm font-medium hover:bg-emerald-500 disabled:opacity-50">
+          {busy ? "Signing in…" : "Sign in"}
         </button>
+        <p className="text-center text-xs text-zinc-500">Teachers: first password is your date of birth (DDMMYYYY)</p>
       </form>
     </main>
   );
