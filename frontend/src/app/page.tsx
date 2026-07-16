@@ -22,7 +22,10 @@ export default function Home() {
           <a className={link} href="/me">👤 My attendance</a>
         </>}
         {role === "kiosk" && <a className={link} href="/kiosk">🖥️ Open kiosk display</a>}
-        {role === "admin" && <a className={link} href={`${API}/docs`}>⚙️ Admin API console (/docs)</a>}
+        {role === "admin" && <>
+          <a className={link} href="/admin">📊 Admin dashboard</a>
+          <a className={link} href={`${API}/docs`}>⚙️ API console (/docs)</a>
+        </>}
         <button className="text-sm text-zinc-500 hover:text-zinc-300"
                 onClick={() => { localStorage.clear(); window.location.href = "/login"; }}>
           Sign out

@@ -61,3 +61,9 @@ Start from line 7
 - tests/test_admin_p3.py added (2 tests). Fixed test pollution: test_provider_registry fake overwrote real QR provider (method "QR"→"FAKE"). Suite 31 green.
 - User forgot admin password → reset in DB to ChangeMe123! (force_password_reset=False).
 - NEXT: P3 admin frontend (dashboard, faculties/departments, teachers+import wizard, kiosks, audit, network settings).
+
+## 2026-07-16 — Phase 3 COMPLETE (admin UI)
+- frontend/src/app/admin/: layout.tsx (role guard + sidebar), page.tsx (stats tiles + day/faculty/dept filters), academic/ (faculty+dept CRUD), teachers/ (create form, CSV/XLSX import wizard preview→skip/override commit, table), kiosks/ (create w/ one-time password banner, enable/disable), audit/ (search + pagination), network/ (CIDR allowlist toggle).
+- Home page admin link now → /admin (docs link kept).
+- npm build green (14 routes). Compose rebuild: /admin 200, /health 200, admin login OK with reset password.
+- phases.md: P3 → COMPLETED. V1 scope (phases 0→3) DONE. P4/P5 deferred.

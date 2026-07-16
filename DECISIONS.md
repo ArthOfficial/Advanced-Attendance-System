@@ -44,3 +44,6 @@ TYPE ∈ decision · deferral · cut-corner · user-request · assumption · ope
 - 2026-07-16 | P3 | bugfix | test_provider_registry fake provider registered under "QR", clobbering the real QRProvider in the shared registry → scan tests got str "marked". Fake now uses method "FAKE". Lesson: module-level registries are shared across the test session.
 - 2026-07-16 | P3 | decision | Network validation: SystemSetting "allowed_networks" {enabled,cidrs}. Loopback always allowed; unparseable client IP fail-open (ponytail — testclient/odd proxies). Only /attendance/scan enforced in V1.
 - 2026-07-16 | P3 | user-request | User forgot admin password → reset directly in DB to ChangeMe123!. No forgot-password flow in V1 (admin resets via DB or /docs).
+- 2026-07-16 | P3 | decision | Phase 3 COMPLETE. Admin UI at /admin (dashboard, academic CRUD, teachers+import wizard, kiosks, audit, network). /docs kept as power-user fallback.
+- 2026-07-16 | P3 | cut-corner | Admin UI uses prompt()/confirm() for rename/delete — no modal components. Upgrade if UX matters.
+- 2026-07-16 | P3 | decision | V1 scope (phases 0→3) done. P4 (device intel/quarantine) & P5 (reports) remain deferred per original plan.
