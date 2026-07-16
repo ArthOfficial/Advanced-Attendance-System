@@ -7,6 +7,7 @@ const NAV = [
   ["/admin/academic", "🏛️ Faculties & Departments"],
   ["/admin/teachers", "👥 Teachers"],
   ["/admin/kiosks", "🖥️ Kiosks"],
+  ["/admin/reports", "📈 Reports"],
   ["/admin/audit", "📜 Audit log"],
   ["/admin/network", "🌐 Network"],
 ] as const;

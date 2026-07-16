@@ -47,3 +47,6 @@ TYPE ∈ decision · deferral · cut-corner · user-request · assumption · ope
 - 2026-07-16 | P3 | decision | Phase 3 COMPLETE. Admin UI at /admin (dashboard, academic CRUD, teachers+import wizard, kiosks, audit, network). /docs kept as power-user fallback.
 - 2026-07-16 | P3 | cut-corner | Admin UI uses prompt()/confirm() for rename/delete — no modal components. Upgrade if UX matters.
 - 2026-07-16 | P3 | decision | V1 scope (phases 0→3) done. P4 (device intel/quarantine) & P5 (reports) remain deferred per original plan.
+- 2026-07-16 | P5 | decision | Built P5 (reports) lean after user asked to keep building post-V1. P4 stays deferred — phases.md explicitly gates it on confirmed need (false-positive lockout risk).
+- 2026-07-16 | P5 | cut-corner | CSV via stdlib csv module, not pandas/openpyxl. XLSX/PDF exports on demand later. Rollups computed in Python, fine for hundreds of teachers.
+- 2026-07-16 | P5 | decision | Report percent = present / (sessions_in_range × teachers_in_group). Teachers created mid-range are counted against all sessions in range (no hire-date proration).

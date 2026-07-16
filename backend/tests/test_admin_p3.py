@@ -26,6 +26,21 @@ def test_stats_and_audit():
     assert a.status_code == 200 and isinstance(a.json(), list)
 
 
+def test_reports_json_and_csv():
+    h = _admin()
+    r = client.get("/admin/reports", params={
+        "date_from": "2026-01-01", "date_to": "2026-12-31", "group_by": "faculty"}, headers=h)
+    assert r.status_code == 200
+    b = r.json()
+    assert "rows" in b and b["group_by"] == "faculty"
+    c = client.get("/admin/reports", params={
+        "date_from": "2026-01-01", "date_to": "2026-12-31", "fmt": "csv"}, headers=h)
+    assert c.status_code == 200 and c.headers["content-type"].startswith("text/csv")
+    assert client.get("/admin/reports", params={
+        "date_from": "2026-01-01", "date_to": "2026-12-31", "group_by": "bogus"},
+        headers=h).status_code == 422
+
+
 def test_network_settings_roundtrip_and_loopback_ok():
     h = _admin()
     r = client.put("/admin/settings/network",

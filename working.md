@@ -67,3 +67,10 @@ Start from line 7
 - Home page admin link now → /admin (docs link kept).
 - npm build green (14 routes). Compose rebuild: /admin 200, /health 200, admin login OK with reset password.
 - phases.md: P3 → COMPLETED. V1 scope (phases 0→3) DONE. P4/P5 deferred.
+
+## 2026-07-16 — Phase 5 (Reports, lean)
+- Docker Desktop had stopped again → restarted (Start-Process + sleep 45), db up, suite back green.
+- backend/app/api/admin.py: GET /admin/reports (date_from/date_to, group_by=teacher|department|faculty, faculty/dept filters, fmt=csv via stdlib csv — no pandas). Python rollup (ponytail).
+- tests/test_admin_p3.py: +test_reports_json_and_csv → 32 passed.
+- frontend/src/app/admin/reports/page.tsx: date range, group-by, table, CSV download. Nav link added.
+- npm build green, compose rebuild: /admin/reports 200, API returns real rollups.

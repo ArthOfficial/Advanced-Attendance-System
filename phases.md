@@ -22,7 +22,7 @@ Roles: **Admin**, **Teacher**, **Attendance Kiosk**.
 - Phase 2 — Core Attendance Loop ...... COMPLETED (2026-07-15, 29 tests green, E2E kiosk→QR→scan OK)
 - Phase 3 — Admin + Audit + Network ... COMPLETED (2026-07-16, 31 tests green, admin UI live, compose smoke OK)
 - Phase 4 — Device Intel + Quarantine . DEFERRED
-- Phase 5 — Reports ................... DEFERRED
+- Phase 5 — Reports ................... COMPLETED (2026-07-16, lean: JSON+CSV rollups, 32 tests green, smoke OK)
 
 ---
 
