@@ -57,3 +57,5 @@ TYPE ∈ decision · deferral · cut-corner · user-request · assumption · ope
 - 2026-07-16 | decision | has_children is intentional (block deleting faculty with departments / department with teachers); only the message was made human-readable. No cascade delete.
 - 2026-07-17 | ui | user-request | Deletes are now cascading behind an explicit confirm popup: faculty→(departments+teachers), department→(teachers, faculty kept), teacher→type-"confirm". Backend still 409s without ?force=true, so nothing cascades by accident via API.
 - 2026-07-17 | decision | Teacher cascade keeps audit_logs rows (immutable history) — actor_user_id is nulled instead of deleting rows.
+- 2026-07-17 | ops | decision | pytest now always targets smartcampus_test (tests/conftest.py env override) — dev DB pollution root-caused and fixed.
+- 2026-07-17 | ops | decision | db_backup.sql gitignored (password hashes); DB transfers happen via the zip, per transfer.md.

@@ -97,3 +97,10 @@ Start from line 7
 - api: GET /faculties/{id}/children, GET /departments/{id}/children, DELETE ?force=true, DELETE /teachers/{tid}. 409 without force when children exist.
 - frontend: components/ConfirmDeleteModal.tsx (modal + native <details> Collapse). academic page: delete → popup with collapsible "Departments to be deleted" + "Teachers to be deleted" (dept delete shows parent faculty is kept + teacher list). teachers page: Delete column → popup requiring typing "confirm".
 - 34 tests green; smoke: /faculties/{id}/children returns live data.
+
+## 2026-07-17 — DB cleanup round 2, test isolation, transfer.md
+- Dev DB purged again (test junk from pytest): kept admin, T001-T003 (Carol recreated — was deleted while testing cascade), Faculty of Engineering (CS/EE) + Science (Physics), kiosks Main Gate + "I dont kno0w"; removed 3 disabled Gate A kiosks. 6 users total.
+- ROOT CAUSE FIX: tests/conftest.py forces DATABASE_URL → smartcampus_test DB (created + migrated). Dev DB will never get test junk again. 34 tests green with no env var.
+- transfer.md written: full beginner handover guide (install list, zip instructions, pg_dump/restore steps, credentials, layout map, troubleshooting, admin password reset).
+- db_backup.sql dumped (80K) and gitignored (contains password hashes — hand over inside the zip, not via GitHub).
+- STILL PENDING (user request): multiselect bulk delete UI, DOB field label, overall admin UI polish.
