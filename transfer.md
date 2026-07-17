@@ -115,6 +115,25 @@ Minimum laptop: any 64-bit machine with 8 GB RAM and ~10 GB free disk.
 
 ---
 
+### Running it on an Ubuntu server instead of a laptop (works great — recommended)
+Same project, same commands. Only the install step differs (no Docker Desktop on servers):
+```
+sudo apt update && sudo apt install -y docker.io docker-compose-v2
+sudo usermod -aG docker $USER    # then log out & back in
+```
+Copy the project folder over (USB, or `scp -r AttendaceUnviersity/ user@server:~/`),
+then inside it run the SAME steps as section 4 (`docker compose up -d --build`,
+restore `db_backup.sql`). Open firewall ports if ufw is on:
+```
+sudo ufw allow 3000 && sudo ufw allow 8000
+```
+Everyone on the network then uses `http://<server-ip>:3000`. Containers have
+`restart: unless-stopped`, so the app comes back by itself after a reboot —
+no screen/session needed. To update after code changes:
+`git pull && docker compose up -d --build`.
+
+---
+
 ## 5. LOGINS (with the restored database)
 
 | Role | Login | Password | Lands on |

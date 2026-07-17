@@ -104,3 +104,7 @@ Start from line 7
 - transfer.md written: full beginner handover guide (install list, zip instructions, pg_dump/restore steps, credentials, layout map, troubleshooting, admin password reset).
 - db_backup.sql dumped (80K) and gitignored (contains password hashes — hand over inside the zip, not via GitHub).
 - STILL PENDING (user request): multiselect bulk delete UI, DOB field label, overall admin UI polish.
+
+## 2026-07-17 — Ubuntu server support
+- docker-compose.yml: restart: unless-stopped on all 3 services (survives server reboots).
+- transfer.md: added Ubuntu server section (apt install docker, scp, ufw ports, auto-restart note).
