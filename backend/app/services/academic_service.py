@@ -28,12 +28,28 @@ class AcademicService(BaseService):
         self.db.commit()
         return fac
 
-    def delete_faculty(self, id_: uuid.UUID) -> None:
+    def faculty_children(self, id_: uuid.UUID) -> dict:
+        if not self.faculties.get(id_):
+            raise ValueError("not_found")
+        deps = self.departments.list_by_faculty(id_)
+        teachers = self.db.query(Teacher).filter_by(faculty_id=id_).all()
+        return {"departments": [{"id": str(d.id), "name": d.name} for d in deps],
+                "teachers": [{"id": str(t.id), "employee_id": t.employee_id,
+                              "full_name": t.full_name} for t in teachers]}
+
+    def delete_faculty(self, id_: uuid.UUID, force: bool = False) -> None:
         fac = self.faculties.get(id_)
         if not fac:
             raise ValueError("not_found")
-        if self.departments.list_by_faculty(id_):
+        deps = self.departments.list_by_faculty(id_)
+        if deps and not force:
             raise ValueError("has_children")
+        from app.services.teacher_service import delete_teacher_cascade
+        for t in self.db.query(Teacher).filter_by(faculty_id=id_).all():
+            delete_teacher_cascade(self.db, t)
+        self.db.flush()  # teachers must hit the DB before their departments go
+        for d in deps:
+            self.db.delete(d)
         self.db.delete(fac)
         self.db.commit()
 
@@ -56,12 +72,25 @@ class AcademicService(BaseService):
         self.db.commit()
         return dep
 
-    def delete_department(self, id_: uuid.UUID) -> None:
+    def department_children(self, id_: uuid.UUID) -> dict:
         dep = self.departments.get(id_)
         if not dep:
             raise ValueError("not_found")
-        has_teachers = self.db.query(Teacher).filter_by(department_id=id_).first()
-        if has_teachers:
+        fac = self.faculties.get(dep.faculty_id)
+        teachers = self.db.query(Teacher).filter_by(department_id=id_).all()
+        return {"faculty": {"id": str(fac.id), "name": fac.name} if fac else None,
+                "teachers": [{"id": str(t.id), "employee_id": t.employee_id,
+                              "full_name": t.full_name} for t in teachers]}
+
+    def delete_department(self, id_: uuid.UUID, force: bool = False) -> None:
+        dep = self.departments.get(id_)
+        if not dep:
+            raise ValueError("not_found")
+        teachers = self.db.query(Teacher).filter_by(department_id=id_).all()
+        if teachers and not force:
             raise ValueError("has_children")
+        from app.services.teacher_service import delete_teacher_cascade
+        for t in teachers:
+            delete_teacher_cascade(self.db, t)
         self.db.delete(dep)
         self.db.commit()

@@ -38,6 +38,15 @@ def get_teacher(tid: uuid.UUID, user: User = Depends(require_role("admin")), db=
     return t
 
 
+@router.delete("/teachers/{tid}", status_code=204)
+def delete_teacher(tid: uuid.UUID, user: User = Depends(require_role("admin")), db=Depends(get_db)):
+    try:
+        t = TeacherService(db).delete_teacher(tid)
+    except ValueError as e:
+        raise HTTPException(_HTTP.get(str(e), 400), str(e))
+    audit(db, user.id, "teacher.deleted", entity=str(tid), detail={"employee_id": t.employee_id})
+
+
 @router.get("/me", response_model=TeacherMe)
 def me(user: User = Depends(require_role("teacher")), db=Depends(get_db)):
     svc = TeacherService(db)

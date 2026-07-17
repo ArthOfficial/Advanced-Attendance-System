@@ -1,9 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import ConfirmDeleteModal, { Collapse } from "@/components/ConfirmDeleteModal";
 
 type Fac = { id: string; name: string };
 type Dep = { id: string; name: string; faculty_id: string };
+type Kid = { id: string; name?: string; employee_id?: string; full_name?: string };
+type Pending = { kind: "faculty" | "department"; id: string; name: string;
+  departments: Kid[]; teachers: Kid[]; faculty?: Kid | null };
 
 const input = "rounded-lg bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm";
 const btn = "rounded-lg bg-indigo-600 px-3 py-2 text-sm hover:bg-indigo-500";
@@ -15,6 +19,8 @@ export default function Academic() {
   const [dName, setDName] = useState("");
   const [dFac, setDFac] = useState("");
   const [err, setErr] = useState("");
+  const [pending, setPending] = useState<Pending | null>(null);
+  const [busy, setBusy] = useState(false);
 
   const load = () => {
     api("/faculties").then(setFaculties).catch(e => setErr(e.message));
@@ -23,6 +29,32 @@ export default function Academic() {
   useEffect(load, []);
 
   const run = (p: Promise<unknown>) => p.then(() => { setErr(""); load(); }).catch(e => setErr(e.message));
+
+  const askDeleteFaculty = async (f: Fac) => {
+    try {
+      const kids = await api(`/faculties/${f.id}/children`);
+      setPending({ kind: "faculty", id: f.id, name: f.name,
+                   departments: kids.departments, teachers: kids.teachers });
+    } catch (e) { setErr((e as Error).message); }
+  };
+
+  const askDeleteDepartment = async (d: Dep) => {
+    try {
+      const kids = await api(`/departments/${d.id}/children`);
+      setPending({ kind: "department", id: d.id, name: d.name,
+                   departments: [], teachers: kids.teachers, faculty: kids.faculty });
+    } catch (e) { setErr((e as Error).message); }
+  };
+
+  const confirmDelete = async () => {
+    if (!pending) return;
+    setBusy(true);
+    const path = pending.kind === "faculty" ? "faculties" : "departments";
+    try {
+      await api(`/${path}/${pending.id}?force=true`, { method: "DELETE" });
+      setPending(null); setErr(""); load();
+    } catch (e) { setErr((e as Error).message); } finally { setBusy(false); }
+  };
 
   return (
     <div className="space-y-8 max-w-3xl">
@@ -44,9 +76,7 @@ export default function Academic() {
                   const n = prompt("New name", f.name);
                   if (n) run(api(`/faculties/${f.id}`, { method: "PATCH", body: JSON.stringify({ name: n }) }));
                 }}>Rename</button>
-                <button className="text-red-400 hover:text-red-300" onClick={() => {
-                  if (confirm(`Delete faculty "${f.name}"?`)) run(api(`/faculties/${f.id}`, { method: "DELETE" }));
-                }}>Delete</button>
+                <button className="text-red-400 hover:text-red-300" onClick={() => askDeleteFaculty(f)}>Delete</button>
               </span>
             </li>
           ))}
@@ -73,15 +103,29 @@ export default function Academic() {
                   const n = prompt("New name", d.name);
                   if (n) run(api(`/departments/${d.id}`, { method: "PATCH", body: JSON.stringify({ name: n }) }));
                 }}>Rename</button>
-                <button className="text-red-400 hover:text-red-300" onClick={() => {
-                  if (confirm(`Delete department "${d.name}"?`)) run(api(`/departments/${d.id}`, { method: "DELETE" }));
-                }}>Delete</button>
+                <button className="text-red-400 hover:text-red-300" onClick={() => askDeleteDepartment(d)}>Delete</button>
               </span>
             </li>
           ))}
           {!departments.length && <li className="px-4 py-3 text-sm text-zinc-500">No departments yet.</li>}
         </ul>
       </section>
+
+      {pending && (
+        <ConfirmDeleteModal
+          title={`Delete ${pending.kind} "${pending.name}"?`}
+          busy={busy} onConfirm={confirmDelete} onCancel={() => setPending(null)}>
+          <p>This will permanently delete everything below. Teachers lose their accounts and attendance history.</p>
+          {pending.kind === "faculty" && (
+            <Collapse label="🏛️ Departments to be deleted" items={pending.departments.map(d => d.name!)} />
+          )}
+          {pending.kind === "department" && pending.faculty && (
+            <p className="text-zinc-500">Parent faculty <b className="text-zinc-300">{pending.faculty.name}</b> is NOT deleted.</p>
+          )}
+          <Collapse label="👥 Teachers to be deleted"
+                    items={pending.teachers.map(t => `${t.employee_id} — ${t.full_name}`)} />
+        </ConfirmDeleteModal>
+      )}
     </div>
   );
 }

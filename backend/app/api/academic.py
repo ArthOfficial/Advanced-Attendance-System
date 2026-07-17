@@ -55,13 +55,22 @@ def update_faculty(fid: uuid.UUID, body: FacultyIn, user: User = Depends(require
     return fac
 
 
-@router.delete("/faculties/{fid}", status_code=204)
-def delete_faculty(fid: uuid.UUID, user: User = Depends(require_role("admin")), db=Depends(get_db)):
+@router.get("/faculties/{fid}/children")
+def faculty_children(fid: uuid.UUID, user: User = Depends(require_role("admin")), db=Depends(get_db)):
     try:
-        AcademicService(db).delete_faculty(fid)
+        return AcademicService(db).faculty_children(fid)
     except ValueError as e:
         _raise(e)
-    audit(db, user.id, "faculty.deleted", entity=str(fid))
+
+
+@router.delete("/faculties/{fid}", status_code=204)
+def delete_faculty(fid: uuid.UUID, force: bool = False,
+                   user: User = Depends(require_role("admin")), db=Depends(get_db)):
+    try:
+        AcademicService(db).delete_faculty(fid, force=force)
+    except ValueError as e:
+        _raise(e)
+    audit(db, user.id, "faculty.deleted", entity=str(fid), detail={"force": force})
 
 
 @router.post("/departments", response_model=DepartmentOut, status_code=201)
@@ -92,10 +101,19 @@ def update_department(did: uuid.UUID, body: DepartmentUpdate, user: User = Depen
     return dep
 
 
-@router.delete("/departments/{did}", status_code=204)
-def delete_department(did: uuid.UUID, user: User = Depends(require_role("admin")), db=Depends(get_db)):
+@router.get("/departments/{did}/children")
+def department_children(did: uuid.UUID, user: User = Depends(require_role("admin")), db=Depends(get_db)):
     try:
-        AcademicService(db).delete_department(did)
+        return AcademicService(db).department_children(did)
     except ValueError as e:
         _raise(e)
-    audit(db, user.id, "department.deleted", entity=str(did))
+
+
+@router.delete("/departments/{did}", status_code=204)
+def delete_department(did: uuid.UUID, force: bool = False,
+                      user: User = Depends(require_role("admin")), db=Depends(get_db)):
+    try:
+        AcademicService(db).delete_department(did, force=force)
+    except ValueError as e:
+        _raise(e)
+    audit(db, user.id, "department.deleted", entity=str(did), detail={"force": force})

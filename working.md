@@ -91,3 +91,9 @@ Start from line 7
 - /me upgraded to teacher dashboard: big Scan button, attendance % tile, sign out, empty state.
 - Admin sidebar highlights active page. academic delete errors now human-readable ("Cannot delete: still has departments or teachers…" instead of "has_children").
 - 32 tests green; CORS preflight from LAN origin verified 200.
+
+## 2026-07-17 — Cascade delete + confirmation modals
+- academic_service.py: faculty_children()/department_children() previews; delete_faculty/delete_department(force=) cascade via delete_teacher_cascade (teacher_service.py — deletes attendance + user, detaches audit rows, keeps audit history). flush() before dept delete (FK order).
+- api: GET /faculties/{id}/children, GET /departments/{id}/children, DELETE ?force=true, DELETE /teachers/{tid}. 409 without force when children exist.
+- frontend: components/ConfirmDeleteModal.tsx (modal + native <details> Collapse). academic page: delete → popup with collapsible "Departments to be deleted" + "Teachers to be deleted" (dept delete shows parent faculty is kept + teacher list). teachers page: Delete column → popup requiring typing "confirm".
+- 34 tests green; smoke: /faculties/{id}/children returns live data.

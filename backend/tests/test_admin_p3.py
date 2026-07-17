@@ -41,6 +41,34 @@ def test_reports_json_and_csv():
         headers=h).status_code == 422
 
 
+def test_cascade_delete_faculty():
+    h = _admin()
+    tag = uuid.uuid4().hex[:6]
+    fac = client.post("/faculties", json={"name": f"DelF-{tag}"}, headers=h).json()
+    dep = client.post("/departments", json={"name": "D", "faculty_id": fac["id"]}, headers=h).json()
+    t = client.post("/teachers", json={
+        "employee_id": f"DEL{tag}", "full_name": "Doomed T", "dob": "1990-01-01",
+        "faculty_id": fac["id"], "department_id": dep["id"]}, headers=h).json()
+    kids = client.get(f"/faculties/{fac['id']}/children", headers=h).json()
+    assert len(kids["departments"]) == 1 and len(kids["teachers"]) == 1
+    assert client.delete(f"/faculties/{fac['id']}", headers=h).status_code == 409
+    assert client.delete(f"/faculties/{fac['id']}?force=true", headers=h).status_code == 204
+    assert client.get(f"/teachers/{t['id']}", headers=h).status_code == 404
+
+
+def test_delete_teacher():
+    h = _admin()
+    tag = uuid.uuid4().hex[:6]
+    fac = client.post("/faculties", json={"name": f"TDel-{tag}"}, headers=h).json()
+    dep = client.post("/departments", json={"name": "D", "faculty_id": fac["id"]}, headers=h).json()
+    t = client.post("/teachers", json={
+        "employee_id": f"TD{tag}", "full_name": "Gone Soon", "dob": "1991-02-02",
+        "faculty_id": fac["id"], "department_id": dep["id"]}, headers=h).json()
+    assert client.delete(f"/teachers/{t['id']}", headers=h).status_code == 204
+    assert client.get(f"/teachers/{t['id']}", headers=h).status_code == 404
+    client.delete(f"/faculties/{fac['id']}?force=true", headers=h)
+
+
 def test_network_settings_roundtrip_and_loopback_ok():
     h = _admin()
     r = client.put("/admin/settings/network",

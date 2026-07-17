@@ -55,3 +55,5 @@ TYPE ∈ decision · deferral · cut-corner · user-request · assumption · ope
 - 2026-07-16 | bugfix | Phones couldn't use the app: NEXT_PUBLIC_API_URL default localhost:8000 + CORS localhost-only. API base now derived from window.location.hostname; CORS regex allows any http origin on :3000 (fine — local-network app, real gate is JWT + optional CIDR allowlist).
 - 2026-07-16 | decision | "Keep me logged in" = storage choice (localStorage vs sessionStorage) + silent refresh-token retry on 401. No server-side session table (ponytail).
 - 2026-07-16 | decision | has_children is intentional (block deleting faculty with departments / department with teachers); only the message was made human-readable. No cascade delete.
+- 2026-07-17 | ui | user-request | Deletes are now cascading behind an explicit confirm popup: faculty→(departments+teachers), department→(teachers, faculty kept), teacher→type-"confirm". Backend still 409s without ?force=true, so nothing cascades by accident via API.
+- 2026-07-17 | decision | Teacher cascade keeps audit_logs rows (immutable history) — actor_user_id is nulled instead of deleting rows.

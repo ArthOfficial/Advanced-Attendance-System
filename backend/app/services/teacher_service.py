@@ -3,11 +3,25 @@ import uuid
 from app.core.passwords import dob_password
 from app.core.security import hash_password
 from app.models.academic import Teacher
+from app.models.attendance import Attendance
+from app.models.infra import AuditLog
 from app.models.user import Role, User
 from app.repositories.academic_repo import DepartmentRepository, FacultyRepository
 from app.repositories.teacher_repo import TeacherRepository
 from app.schemas.teacher import TeacherCreate
 from app.services.base import BaseService
+
+
+def delete_teacher_cascade(db, teacher: Teacher) -> None:
+    """Remove a teacher and everything hanging off them. Caller commits."""
+    db.query(Attendance).filter_by(teacher_id=teacher.id).delete()
+    user = db.get(User, teacher.user_id)
+    if user:
+        # audit rows are immutable history — keep them, just detach the actor
+        db.query(AuditLog).filter_by(actor_user_id=user.id).update({"actor_user_id": None})
+    db.delete(teacher)
+    if user:
+        db.delete(user)
 
 
 class TeacherService(BaseService):
@@ -42,6 +56,14 @@ class TeacherService(BaseService):
         self.db.add(teacher)
         self.db.commit()
         self.db.refresh(teacher)
+        return teacher
+
+    def delete_teacher(self, tid: uuid.UUID) -> Teacher:
+        teacher = self.teachers.get(tid)
+        if not teacher:
+            raise ValueError("not_found")
+        delete_teacher_cascade(self.db, teacher)
+        self.db.commit()
         return teacher
 
     def list_teachers(self, faculty_id: uuid.UUID | None = None,

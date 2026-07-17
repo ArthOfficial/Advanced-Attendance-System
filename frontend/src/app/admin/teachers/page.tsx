@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { API, api, getToken } from "@/lib/api";
+import ConfirmDeleteModal from "@/components/ConfirmDeleteModal";
 
 type Opt = { id: string; name: string; faculty_id?: string };
 type Teacher = { id: string; employee_id: string; full_name: string; dob: string;
@@ -22,6 +23,7 @@ export default function Teachers() {
   const [msg, setMsg] = useState("");
   const [preview, setPreview] = useState<Preview | null>(null);
   const [busy, setBusy] = useState(false);
+  const [toDelete, setToDelete] = useState<Teacher | null>(null);
 
   const load = () => {
     api("/teachers").then(setTeachers).catch(e => setErr(e.message));
@@ -64,6 +66,15 @@ export default function Teachers() {
     api("/teachers/import/commit", { method: "POST", body: JSON.stringify({ import_id: preview.import_id, duplicate_action: action }) })
       .then(r => { setMsg(`Import done: ${r.created} created, ${r.updated} updated, ${r.skipped} skipped, ${r.rejected} rejected.`); setPreview(null); load(); })
       .catch(e => setErr(e.message)).finally(() => setBusy(false));
+  };
+
+  const deleteTeacher = async () => {
+    if (!toDelete) return;
+    setBusy(true);
+    try {
+      await api(`/teachers/${toDelete.id}`, { method: "DELETE" });
+      setMsg(`Deleted ${toDelete.full_name}.`); setErr(""); setToDelete(null); load();
+    } catch (e) { setErr((e as Error).message); } finally { setBusy(false); }
   };
 
   const facName = (id: string) => faculties.find(f => f.id === id)?.name ?? "?";
@@ -133,7 +144,7 @@ export default function Teachers() {
             <thead><tr className="text-left text-zinc-400">
               <th className="px-4 py-2">Employee ID</th><th className="px-4 py-2">Name</th>
               <th className="px-4 py-2">Faculty</th><th className="px-4 py-2">Department</th>
-              <th className="px-4 py-2">Designation</th><th className="px-4 py-2">Email</th>
+              <th className="px-4 py-2">Designation</th><th className="px-4 py-2">Email</th><th className="px-4 py-2"></th>
             </tr></thead>
             <tbody className="divide-y divide-zinc-800">
               {teachers.map(t => (
@@ -144,13 +155,26 @@ export default function Teachers() {
                   <td className="px-4 py-2">{depName(t.department_id)}</td>
                   <td className="px-4 py-2">{t.designation ?? "—"}</td>
                   <td className="px-4 py-2">{t.email ?? "—"}</td>
+                  <td className="px-4 py-2">
+                    <button className="text-red-400 hover:text-red-300" onClick={() => setToDelete(t)}>Delete</button>
+                  </td>
                 </tr>
               ))}
-              {!teachers.length && <tr><td className="px-4 py-3 text-zinc-500" colSpan={6}>No teachers yet.</td></tr>}
+              {!teachers.length && <tr><td className="px-4 py-3 text-zinc-500" colSpan={7}>No teachers yet.</td></tr>}
             </tbody>
           </table>
         </div>
       </section>
+
+      {toDelete && (
+        <ConfirmDeleteModal
+          title={`Delete teacher ${toDelete.full_name}?`}
+          requireText="confirm" busy={busy}
+          onConfirm={deleteTeacher} onCancel={() => setToDelete(null)}>
+          <p><b>{toDelete.employee_id} — {toDelete.full_name}</b> ({facName(toDelete.faculty_id)} / {depName(toDelete.department_id)})</p>
+          <p>Their login account and all attendance history will be permanently deleted.</p>
+        </ConfirmDeleteModal>
+      )}
     </div>
   );
 }
