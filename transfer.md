@@ -33,7 +33,7 @@ Read these files in the repo root to understand everything:
 
 ---
 
-## 2. FOR THE CURRENT OWNER — WHAT TO GIVE YOUR FRIEND
+## 2. FOR THE CURRENT OWNER — WHAT TO GIVE YOUR FRIEND [COMPLETED]
 
 Give him **two things**:
 
